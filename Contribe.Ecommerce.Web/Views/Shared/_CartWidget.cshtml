@@ -1,0 +1,26 @@
+﻿@{
+	var cart = Session["Cart"] as Contribe.Ecommerce.Services.ShoppingCartService;
+
+}
+
+@if (cart != null)
+{
+	@Ajax.ActionLink("Varukorg(" + @cart.TotalQuantity + ")", "Index", "ShoppingCart", null,
+	new AjaxOptions { UpdateTargetId = "divList" })
+	<ul class="dropdown" id="cart">
+		@foreach (var item in cart.Items)
+		{
+			<li>@item.Book.Title (@item.Quantity)</li>
+		}
+		
+			@Ajax.ActionLink("Summa: " + @cart.GetCartTotal().ToString("0.00"), "Index", "ShoppingCart", null,
+			new AjaxOptions { UpdateTargetId = "divList" })
+	</ul>
+}
+else
+{
+	@Ajax.ActionLink("Varukorg", "Index", "ShoppingCart", null,
+	new AjaxOptions { UpdateTargetId = "divList" })
+}
+
+

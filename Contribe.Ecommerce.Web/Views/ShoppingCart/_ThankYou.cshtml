@@ -1,0 +1,27 @@
+﻿@model Contribe.Ecommerce.Web.ViewModels.CreateOrderViewModel
+
+<div>
+	<h3>Ditt köp kommer att skickas till dig</h3>
+	<table class="table table-bordered table-striped table-highlight">
+		<thead>
+		<th>Vara</th>
+		<th>Antal</th>
+		<th>Pris</th>
+		<th>Delsumma</th>
+		<th>Totalt</th>
+		</thead>
+		<tbody>
+			@foreach (var item in Model.Cart.Items)
+			{
+				<tr>
+					<td><label class="control-label">@item.Book.Title</label></td>
+					<td><label class="control-label">@item.Quantity</label></td>
+					<td><label class="control-label">@item.Book.Price.ToString("0.00")</label></td>
+					<td><label class="control-label">@((item.Quantity * item.Book.Price).ToString("0.00"))</label></td>
+					<td><label class="control-label">@Model.Cart.GetCartTotal().ToString("0.00")</label></td>
+					
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

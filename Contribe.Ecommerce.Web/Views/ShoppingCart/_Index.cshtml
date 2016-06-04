@@ -1,0 +1,85 @@
+﻿@model Contribe.Ecommerce.Web.ViewModels.ShoppingCartViewModel
+<div id="divList">
+		<div class="table-responsive">
+			<table class="table table-bordered table-striped table-highlight">
+				<thead>
+				<th>Vara</th>
+				<th>Antal</th>
+				<th>Pris</th>
+				<th>Delsumma</th>
+				<th>Totalt</th>
+				<th>Radera</th>
+				</thead>
+				<tbody>
+				@foreach (var item in Model.Cart.Items)
+				{
+					<tr>
+						<td><label class="control-label">@item.Book.Title</label></td>
+						<td>
+							
+								@using (Ajax.BeginForm("EditQuantity", "ShoppingCart", null,
+								new AjaxOptions { UpdateTargetId = "divList", OnSuccess = "reloadWidget" }, new { @id = "quantityForm" }))
+								{
+
+									if (item.IsNotInStock)
+									{
+										<span>Tyvärr finns det bara @item.Book.InStock i lager</span>
+										item.Quantity = item.Book.InStock;
+										@Html.TextBox("quantity", item.Quantity, new { type = "number", min = "1" })
+									}
+									else
+									{
+										@Html.TextBox("quantity", item.Quantity, new { type = "number", min = "1" })
+									}
+
+									@Html.Hidden("Id", item.Book.BookId)
+									@Html.HiddenFor(x => x.ReturnUrl)
+
+									<input type="submit" class="btn btn-sm btn-default" value="Uppdatera" />
+
+								}
+
+						
+						</td>
+						<td><label class="control-label">@item.Book.Price.ToString("0.00")</label></td>
+						<td><label class="control-label">@((item.Quantity * item.Book.Price).ToString("0.00"))</label></td>
+						<td><label class="control-label">@Model.Cart.GetCartTotal().ToString("0.00")</label></td>
+						<td><label class="control-label">
+							@using (Ajax.BeginForm("RemoveFromCart", "ShoppingCart", null,
+							new AjaxOptions { UpdateTargetId = "divList", OnSuccess = "reloadWidget" }, new { @id = "removeForm" }))
+							{
+
+								@Html.Hidden("Id", item.Book.BookId)
+								@Html.HiddenFor(x => x.ReturnUrl)
+								<button class="btn btn-sm btn-default" type="submit"><i class="fa fa-times"></i>Ta bort</button>
+
+							}
+						</label></td>
+					</tr>
+				}
+				</tbody>
+			</table>
+		</div>
+	
+	<div class="text-center">
+
+		@if (@Model.Cart.TotalQuantity == 0)
+		{
+			@Ajax.ActionLink("Fortsätt handla", "ReloadStartPage", "Home", null,
+				new AjaxOptions { UpdateTargetId = "divList" },null)
+
+			<button class="btn btn-sm btn-default" type="button" disabled>Gå till kassan</button>
+		}
+		else
+		{
+
+			@Ajax.ActionLink("Fortsätt handla", "ReloadStartPage", "Home", null, new AjaxOptions { UpdateTargetId = "divList" }, new { @class = "btn btn-sm btn-default" })
+
+			@Ajax.ActionLink("Gå till kassan", "OrderDetails", "ShoppingCart", null, new AjaxOptions { UpdateTargetId = "divList" }, new { @class = "btn btn-sm btn-default" })
+		}
+
+
+	</div>
+
+</div>
+

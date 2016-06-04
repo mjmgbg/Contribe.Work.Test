@@ -1,0 +1,58 @@
+﻿@model Contribe.Ecommerce.Web.ViewModels.StartPageViewModel
+@{
+	var cart = Session["Cart"] as Contribe.Ecommerce.Services.ShoppingCartService;
+}
+
+	<div class="section-container">
+		<section class="section">
+
+			<div class="content">
+				
+				@if (Model.NoSearchResultFound)
+				{
+					<span class="error">Inget sökresultat hittades</span>
+				}
+				else
+				{
+					<ul class="bookList">
+
+						@foreach (var item in Model.BookList)
+						{
+							int bookInCart = 0;
+							if (cart != null)
+							{
+								bookInCart = cart.GetTotalBookInCart(item.BookId);
+
+							}
+							<li class="col-sm-4">
+								<h5 class="title"> @Html.DisplayFor(modelItem => item.Title)</h5>
+								<h5 class="author"> @Html.DisplayFor(modelItem => item.Author)</h5>
+								<h5 class="price">@Html.DisplayFor(modelItem => item.Price) kr</h5>
+
+								@if (item.InStock == 0 || bookInCart == item.InStock)
+								{
+									<button class="fa fa-frown-o cart"></button>
+								}
+								else
+								{
+
+									using (Ajax.BeginForm("AddToCartWidget", "ShoppingCart", new { id = item.BookId },
+									new AjaxOptions { UpdateTargetId = "cart", OnComplete = "updateCart(" + @item.BookId + ")" }))
+									{
+										<div id="Shop">
+											@Html.HiddenFor(x => item.BookId)
+											@Html.Hidden("returnUrl", Request.Url.PathAndQuery)
+											<button id="@item.BookId-Add" class="fa fa-shopping-cart cart addToCart" data-bookincart=@bookInCart data-bookinstock=@(item.InStock - bookInCart) />
+										</div>
+									}
+
+								}
+							</li>
+						}
+
+					</ul>
+				}
+
+			</div>
+		</section>
+	</div>
